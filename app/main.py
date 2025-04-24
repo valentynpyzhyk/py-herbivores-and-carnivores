@@ -5,25 +5,17 @@ class Animal:
         self.name = name
         self.health = health
         self.hidden = False
-        self.__class__.alive.append(self)
-
-    def take_damage(self, amount: int) -> None:
-        self.health = max(self.health - amount, 0)
-        if self.health == 0:
-            self.die()
-
-    def die(self) -> None:
-        if self in self.__class__.alive:
-            self.__class__.alive.remove(self)
+        Animal.alive.append(self)
 
     def __repr__(self) -> str:
-        return (f"{{Name: {self.name}, "
+        return (f"{{"
+                f"Name: {self.name}, "
                 f"Health: {self.health}, "
                 f"Hidden: {self.hidden}}}")
 
-    @classmethod
-    def __str__(cls) -> str:
-        return str(cls.alive)
+    def die(self) -> None:
+        if self in Animal.alive:
+            Animal.alive.remove(self)
 
 
 class Herbivore(Animal):
@@ -34,4 +26,6 @@ class Herbivore(Animal):
 class Carnivore(Animal):
     def bite(self, other: Animal) -> None:
         if isinstance(other, Herbivore) and not other.hidden:
-            other.take_damage(50)
+            other.health -= 50
+            if other.health <= 0:
+                other.die()
